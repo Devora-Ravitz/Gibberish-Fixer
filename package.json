@@ -1,0 +1,43 @@
+{
+  "name": "hebrew-to-english-fixer",
+  "displayName": "Hebrew to English Fixer",
+  "description": "A VS Code extension to dynamically correct Hebrew gibberish to English.",
+  "version": "0.0.1",
+  "publisher": "DevoraRavitz",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DevoraRavitz/HebrewToEnglishFixer.git"
+},
+
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "icon": "img.png",
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {},
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.9.36",
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.80.0",
+    "@vscode/test-electron": "^2.2.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.1.0"
+  },
+  "dependencies": {
+    "axios": "^1.7.7"
+  }
+}
