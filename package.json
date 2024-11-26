@@ -1,14 +1,13 @@
 {
-  "name": "hebrew-to-english-fixer",
-  "displayName": "Hebrew to English Fixer",
-  "description": "A VS Code extension to dynamically correct Hebrew gibberish to English.",
-  "version": "0.0.1",
+  "name": "gibberish-fixer",
+  "displayName": "Gibberish Fixer",
+  "description": "A VS Code extension designed to dynamically correct gibberish text caused by keyboard language mismatches. Whether you're typing Hebrew instead of English, or English instead of Hebrew, Gibberish Fixer has you covered in both directions!",
+  "version": "0.0.5",
   "publisher": "DevoraRavitz",
   "repository": {
     "type": "git",
     "url": "https://github.com/DevoraRavitz/HebrewToEnglishFixer.git"
-},
-
+  },
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -16,11 +15,30 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
+"activationEvents": [
     "*"
-  ],
+],
   "main": "./out/extension.js",
-  "contributes": {},
+  "contributes": {
+    "commands": [
+      {
+        "command": "myExtension.setApiKey",
+        "title": "Set API Key",
+        "category": "OpenAI Settings"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Hebrew to English Fixer Settings",
+      "properties": {
+        "hebrewToEnglishFixer.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Enter your OpenAI API key to enable the extension."
+        }
+      }
+    }
+  },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
@@ -38,6 +56,6 @@
     "typescript": "^5.1.0"
   },
   "dependencies": {
-    "axios": "^1.7.7"
+    "axios": "^1.7.8"
   }
 }

@@ -59,7 +59,27 @@ const keyboardMap = {
 };
 function activate(context) {
     console.log('Hebrew to English Fixer is now active!');
+    const setApiKeyCommand = vscode.commands.registerCommand('myExtension.setApiKey', () => __awaiter(this, void 0, void 0, function* () {
+        const apiKey = yield vscode.window.showInputBox({
+            prompt: 'Enter your OpenAI API Key',
+            ignoreFocusOut: true,
+            password: true,
+        });
+        if (apiKey) {
+            yield context.globalState.update('openaiApiKey', apiKey);
+            vscode.window.showInformationMessage('API Key saved successfully!');
+        }
+        else {
+            vscode.window.showWarningMessage('No API Key entered. Please try again.');
+        }
+    }));
+    context.subscriptions.push(setApiKeyCommand);
     vscode.workspace.onDidChangeTextDocument((event) => __awaiter(this, void 0, void 0, function* () {
+        const apiKey = context.globalState.get('openaiApiKey');
+        if (!apiKey) {
+            vscode.window.showErrorMessage('No API Key set. Please run the "Set API Key" command.');
+            return;
+        }
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
             console.log('No active editor found.');
@@ -81,18 +101,18 @@ function activate(context) {
         const lastWord = words[words.length - 1];
         if (lastWord) {
             const mappedWord = mapKeyboard(lastWord);
-            const fixedWord = yield checkAndFixWord(lastWord, mappedWord);
+            const fixedWord = yield checkAndFixWord(lastWord, mappedWord, apiKey);
             if (fixedWord && fixedWord !== lastWord) {
                 const range = new vscode.Range(position.line, lineText.lastIndexOf(lastWord), position.line, lineText.lastIndexOf(lastWord) + lastWord.length);
                 editor.edit((editBuilder) => {
                     editBuilder.replace(range, fixedWord);
                 });
-                vscode.window.showInformationMessage(`"${lastWord}" was replaced with "${fixedWord}". Undo?`, "Undo").then((choice) => {
+                vscode.window.showInformationMessage(`${lastWord} was replaced with ${fixedWord}. Undo?`, "Undo").then((choice) => {
                     if (choice === "Undo") {
                         editor.edit((editBuilder) => {
                             editBuilder.replace(range, lastWord);
                         });
-                        vscode.window.showInformationMessage(`"${fixedWord}" was reverted to "${lastWord}".`);
+                        vscode.window.showInformationMessage(`${fixedWord} was reverted to ${lastWord}.`);
                     }
                 });
             }
@@ -105,10 +125,9 @@ function deactivate() {
 function mapKeyboard(word) {
     return word.split('').map(char => keyboardMap[char] || char).join('');
 }
-function checkAndFixWord(originalWord, mappedWord) {
+function checkAndFixWord(originalWord, mappedWord, apiKey) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b;
-        const apiKey = 'Your-Api-Key';
         const apiUrl = 'https://api.openai.com/v1/chat/completions';
         try {
             const originalCheckResponse = yield axios_1.default.post(apiUrl, {
